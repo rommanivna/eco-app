@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id         String   @id @default(uuid())
+  name       String
+  expiryDate DateTime
+  image      String?
+  category   String   @default("Other")
+  createdAt  DateTime @default(now())
+}
+
+model Recipe {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  ingredients   String[]
+  instructions  String
+  isAiGenerated Boolean  @default(true)
+  createdAt     DateTime @default(now())
+}
