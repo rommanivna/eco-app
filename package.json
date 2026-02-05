@@ -28,7 +28,7 @@
     "@prisma/config": "^7.3.0",
     "@prisma/sdk": "^3.15.2",
     "dotenv": "^17.2.3",
-    "pg": "^8.17.2",
+    "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

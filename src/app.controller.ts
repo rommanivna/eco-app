@@ -1,14 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
-import { PrismaService } from './prisma/prisma.service';
-import { Product } from '@prisma/client';
+import { PrismaService } from './app.service';
 
-
-@Controller('products') // Змінимо шлях на /products
+@Controller('products')
 export class AppController {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Get()
-  async getProducts(): Promise<Product[]> {
+  async getProducts() {
     return this.prismaService.product.findMany();
   }
 }
