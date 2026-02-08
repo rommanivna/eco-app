@@ -1,0 +1,38 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service'; // Тільки реальний сервіс!
+
+@Injectable()
+export class ProductsService {
+  constructor(private prisma: PrismaService) {}
+
+  async findAll() {
+    const products = await this.prisma.product.findMany();
+    
+    if (!products || products.length === 0) return [];
+
+    return products.map(product => {
+      const today = new Date();
+      const expiry = new Date(product.expiryDate);
+      const diffTime = expiry.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+      
+      return {
+        ...product,
+        daysLeft: diffDays,
+        isExpired: diffDays < 0
+      };
+    });
+  }
+
+  async create(data: { name: string; expiryDate: Date; category?: string }) {
+    return this.prisma.product.create({
+      data,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.product.delete({
+      where: { id },
+    });
+  }
+}
