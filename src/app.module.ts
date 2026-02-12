@@ -3,9 +3,10 @@ import { ProductsModule } from './products/products.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AiModule } from './ai/ai.module';
 import { RecipesModule } from './recipes/recipes.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, ProductsModule, AiModule, RecipesModule], // Тільки імпортуємо готові модулі
+  imports: [PrismaModule, ProductsModule, AiModule, RecipesModule, AuthModule], // Тільки імпортуємо готові модулі
   controllers: [],
   providers: [],
 })

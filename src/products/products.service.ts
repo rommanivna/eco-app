@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; // Тільки реальний сервіс!
+import { CreateProductDto } from './dto/create-product.dto'; // Імпортуємо DTO для створення продукту
 
 @Injectable()
 export class ProductsService {
@@ -24,7 +25,7 @@ export class ProductsService {
     });
   }
 
-  async create(data: { name: string; expiryDate?: string| Date; category?: string }) {
+  async create(data: CreateProductDto) {
     let expiryDate: Date;
     if (data.expiryDate) {
       expiryDate = new Date(data.expiryDate);

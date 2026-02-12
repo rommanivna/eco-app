@@ -28,6 +28,8 @@
     "@prisma/client": "^7.3.0",
     "@prisma/config": "^7.3.0",
     "@prisma/sdk": "^3.15.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
     "dotenv": "^17.2.3",
     "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",

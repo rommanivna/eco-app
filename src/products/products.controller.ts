@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Delete, Param } from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -10,12 +11,10 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Post()
-  async create(@Body() body: { name: string; expiryDate: string; category?: string }) {
-    return (this.productsService as any).create({
-      ...body,
-      expiryDate: new Date(body.expiryDate),
-    });
+@Post()
+  // 2. Зміни тип Body на твій DTO
+  async create(@Body() createProductDto: CreateProductDto) {
+    return this.productsService.create(createProductDto);
   }
 
   @Delete(':id')
