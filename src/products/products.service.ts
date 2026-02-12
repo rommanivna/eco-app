@@ -24,9 +24,26 @@ export class ProductsService {
     });
   }
 
-  async create(data: { name: string; expiryDate: Date; category?: string }) {
+  async create(data: { name: string; expiryDate?: string| Date; category?: string }) {
+    let expiryDate: Date;
+    if (data.expiryDate) {
+      expiryDate = new Date(data.expiryDate);
+    }else {// Якщо дата не вказана, встановлюємо її на 7 днів вперед
+      expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 7);
+    }
+
+    if (isNaN(expiryDate.getTime())) {
+      expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 7);
+    }
+
     return this.prisma.product.create({
-      data,
+      data: {
+        name: data.name,
+        category: data.category || "Uncategorized",
+        expiryDate: expiryDate,
+      },
     });
   }
 
