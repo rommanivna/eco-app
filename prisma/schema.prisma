@@ -1,6 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"] // Обов'язково додайте цей рядок!
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -14,9 +17,12 @@ model Product {
   image      String?
   category   String   @default("Other")
   createdAt  DateTime @default(now())
-  
-  userId      String?  
-  user        User?    @relation(fields: [userId], references: [id])
+
+  // Relations
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("products")
 }
 
 model Recipe {
@@ -27,6 +33,12 @@ model Recipe {
   instructions  String
   isAiGenerated Boolean  @default(true)
   createdAt     DateTime @default(now())
+
+  // Relations
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("recipes")
 }
 
 model User {
@@ -34,7 +46,12 @@ model User {
   email     String    @unique
   password  String
   name      String?
-  products  Product[] // Зв'язок: у юзера багато продуктів
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  // Relations
+  products Product[]
+  recipes  Recipe[]
+
+  @@map("users")
 }

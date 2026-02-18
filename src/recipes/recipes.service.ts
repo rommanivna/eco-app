@@ -19,7 +19,8 @@ export class RecipesService {
         title: string;        // БУЛО: titile (виправили ✅)
         description: string;
         ingredients: string[];
-        instructions: string; // Твій Prisma тип очікує String, а не String[] ✅
+        instructions: string;
+        userId: string; // Твій Prisma тип очікує String, а не String[] ✅
     }): Promise<Recipe> {
         return this.prisma.recipe.create({
             data: {
