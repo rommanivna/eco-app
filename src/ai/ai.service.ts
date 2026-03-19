@@ -3,54 +3,30 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 @Injectable()
 export class AiService {
-  private genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
-  async detectCategoryAndCorrectName(productName: string): Promise<{ category: string; correctedName: string }> {
-    const model = this.genAI.getGenerativeModel({ 
-      model: 'gemini-2.5-flash',
-      generationConfig: { responseMimeType: "application/json" } // Примусово просимо JSON
-    });
+  // Функція для отримання моделі (ініціалізує ключ щоразу при виклику)
+  private getModel(modelName: string) {
+    const apiKey = process.env.GEMINI_API_KEY;
     
-    const prompt = `
-    Task: Given food item: "${productName}"
-    1. Correct spelling typos (e.g., "mlik" -> "Milk").
-    2. Determine category: Meat, Fish, Dairy, Fruits, Vegetables, Bakery, Eggs, Beverages, Other.
-    Return ONLY a JSON object:
-    {
-      "category": "CategoryName",
-      "correctedName": "CorrectedName"
+    if (!apiKey) {
+      console.error("❌ КРИТИЧНА ПОМИЛКА: GEMINI_API_KEY не знайдено в .env!");
+      throw new Error("API Key is missing. Check your .env file.");
     }
-  `;
 
-    try {
-      console.log(`🤖 AI аналізує: ${productName}...`);
-      const result = await model.generateContent(prompt);
-      let text = result.response.text().trim();
-
-      // Очистка від можливих маркдаун-тегів ```json ... ```
-      text = text.replace(/```json|```/g, '');
-
-      const parsed = JSON.parse(text);
-      
-      return { 
-        category: parsed.category?.trim() || 'Other', 
-        correctedName: parsed.correctedName?.trim() || productName 
-      };
-    } catch (error: any) {
-      console.error("❌ Помилка AI:", error?.message);
-      return { category: 'Other', correctedName: productName }; 
-    }
+    const genAI = new GoogleGenerativeAI(apiKey);
+    return genAI.getGenerativeModel({ 
+      model: modelName,
+      generationConfig: { 
+        responseMimeType: "application/json",
+        temperature: 0.7 
+      }
+    });
   }
 
   async generateRecipe(products: string[]): Promise<any> {
     try {
-      const model = this.genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash',
-        generationConfig: {
-          temperature: 0.7,
-          responseMimeType: "application/json",
-        },
-      });
+      console.log("🤖 Запит до 2.5 Flash для продуктів:", products);
+      
+      const model = this.getModel('gemini-2.5-flash');
 
       const prompt = `
         ROLE: Professional Chef.
@@ -65,15 +41,38 @@ export class AiService {
         }
       `;
 
-      console.log("🤖 Запит на рецепт відправлено...");
       const result = await model.generateContent(prompt);
-      let text = result.response.text().trim();
-      text = text.replace(/```json|```/g, '');
+      const text = result.response.text().replace(/```json|```/g, '').trim();
 
       return JSON.parse(text); 
     } catch (error: any) {
       console.error("❌ Помилка генерації рецепта:", error?.message);
       throw new Error(`AI Recipe failed: ${error.message}`);
+    }
+  }
+
+  // Оновлений метод для категорій (теж на 2.5 Flash)
+  async detectCategoryAndCorrectName(productName: string): Promise<{ category: string; correctedName: string }> {
+    try {
+      const model = this.getModel('gemini-2.5-flash');
+      
+      const prompt = `
+        Task: Given food item: "${productName}"
+        Correct spelling and determine category (Meat, Fish, Dairy, Fruits, Vegetables, Bakery, Eggs, Beverages, Other).
+        Return ONLY JSON: {"category": "Name", "correctedName": "Name"}
+      `;
+
+      const result = await model.generateContent(prompt);
+      const text = result.response.text().replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(text);
+      
+      return { 
+        category: parsed.category || 'Other', 
+        correctedName: parsed.correctedName || productName 
+      };
+    } catch (error) {
+      console.error("❌ Помилка аналізу продукту:", error);
+      return { category: 'Other', correctedName: productName };
     }
   }
 }

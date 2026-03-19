@@ -5,6 +5,8 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors();
+
 // Цей рядок активує всю магію валідації 🛡️
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // видаляє поля, яких немає в DTO
@@ -22,3 +24,4 @@ async function bootstrap() {
   console.log(`🍎 Try to get products: http://localhost:3000/products`);
 }
 bootstrap();
+// npx next dev
