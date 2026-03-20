@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import { Loader2, Lock, Mail } from "lucide-react";
+import { Loader2, Lock, Mail, Leaf } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,16 +19,11 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // 1. Відправляємо запит на бекенд
       const response = await api.post("/auth/login", { email, password });
-
-      // 2. Зберігаємо токен (Response.data.access_token)
       localStorage.setItem("token", response.data.access_token);
-
-      // 3. Летимо в холодильник!
       router.push("/");
     } catch (err: any) {
-      setError("Невірний логін або пароль ❌");
+      setError("Invalid email or password ❌");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -35,34 +31,42 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4 font-sans">
-      <div className="w-full max-w-md bg-white rounded-[40px] shadow-2xl p-10 border border-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-[#F7FBF9] p-4 font-sans">
+      <div className="w-full max-w-md bg-white rounded-[40px] shadow-xl shadow-emerald-100/50 p-10 border border-emerald-50">
+        {/* --- LOGO & WELCOME --- */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-black italic text-gray-900 tracking-tight">
-            Eco App
+          <div className="inline-flex bg-emerald-500 p-3 rounded-2xl mb-4 shadow-lg shadow-emerald-200">
+            <Leaf className="text-white" size={28} />
+          </div>
+          <h1 className="text-3xl font-bold text-emerald-900 tracking-tight">
+            Eco<span className="text-emerald-500">Fridge</span>
           </h1>
-          <p className="text-gray-400 mt-2">
-            З поверненням до свого холодильника! 🍏
+          <p className="text-slate-400 mt-2 font-medium">
+            Welcome back to your smart kitchen! 🍏
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        {/* --- LOGIN FORM --- */}
+        <form onSubmit={handleLogin} className="space-y-5">
           {error && (
-            <p className="text-red-500 text-sm text-center font-medium bg-red-50 py-2 rounded-xl">
+            <div className="bg-red-50 border border-red-100 text-red-500 text-sm text-center font-medium py-3 rounded-2xl animate-shake">
               {error}
-            </p>
+            </div>
           )}
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-400 uppercase ml-4">
-              Email
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-emerald-700/60 uppercase ml-4 tracking-wider">
+              Email Address
             </label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-4 text-gray-300" size={20} />
+            <div className="relative group">
+              <Mail
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-300 group-focus-within:text-emerald-500 transition-colors"
+                size={20}
+              />
               <input
                 type="email"
-                placeholder="anastasiia@mail.com"
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                placeholder="hello@ecofridge.com"
+                className="w-full pl-14 pr-6 py-4 bg-emerald-50/30 border border-emerald-50 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 focus:bg-white outline-none transition-all text-slate-700"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -70,16 +74,19 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-400 uppercase ml-4">
-              Пароль
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-emerald-700/60 uppercase ml-4 tracking-wider">
+              Password
             </label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-4 text-gray-300" size={20} />
+            <div className="relative group">
+              <Lock
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-300 group-focus-within:text-emerald-500 transition-colors"
+                size={20}
+              />
               <input
                 type="password"
                 placeholder="••••••••"
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                className="w-full pl-14 pr-6 py-4 bg-emerald-50/30 border border-emerald-50 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 focus:bg-white outline-none transition-all text-slate-700"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -90,11 +97,24 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-5 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:bg-gray-300 flex justify-center items-center"
+            className="w-full py-4 bg-emerald-500 text-white font-bold rounded-2xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200 active:scale-95 disabled:bg-emerald-200 flex justify-center items-center gap-2 mt-4"
           >
-            {isLoading ? <Loader2 className="animate-spin" /> : "Увійти"}
+            {isLoading ? <Loader2 className="animate-spin" /> : "Sign In"}
           </button>
         </form>
+
+        {/* --- SIGNUP LINK --- */}
+        <div className="mt-8 text-center border-t border-emerald-50 pt-8">
+          <p className="text-slate-400 font-medium">
+            New here?{" "}
+            <Link
+              href="/register"
+              className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors underline decoration-emerald-200 decoration-2 underline-offset-4"
+            >
+              Create an account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
