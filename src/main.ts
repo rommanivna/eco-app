@@ -24,4 +24,4 @@ async function bootstrap() {
   console.log(`🍎 Try to get products: http://localhost:3000/products`);
 }
 bootstrap();
-// npx next dev
+// npm run start:dev
